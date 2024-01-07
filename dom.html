@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    #cart {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .productimage {
+      max-width: 50px;
+      max-height: 50px;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    .like-btn {
+      cursor: pointer;
+    }
+
+    .liked {
+      background-color: red;
+    }
+
+    @media screen and (max-width: 600px) {
+      .cart-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .productimage {
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cart">
+    <!-- Les articles du panier seront ajoutés dynamiquement ici à l'aide de JavaScript -->
+  </div>
+
+  <script>
+    const cart = document.getElementById('cart');
+    const items = [
+      { name: 'Product A', quantity: 1, price: 10, liked: true , image : "./productimage.webp" },
+      { name: 'Product B', quantity: 1, price: 15, liked: false , image : "./productimageB.webp" },
+      { name: 'Product C', quantity: 1, price: 20, liked: true  , image : "./productimageC.png" },
+      { name: 'Product D', quantity: 1, price: 25, liked: false , image :  "./imgc1.jpg" },
+      { name: 'Product E', quantity: 1, price: 30, liked: false , image :  "./imgc2.jpg" },
+      { name: 'Product F', quantity: 1, price: 30, liked: false , image :  "./imgc3.jpg" },
+      // je peux ajouter plus d'éléments si nécessaire
+    ];
+
+    function renderCart() {
+      cart.innerHTML = '';
+
+      let totalPrice = 0;
+
+      items.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.classList.add('cart-item');
+
+        const productImage = document.createElement('img');
+        productImage.src = item.image;
+        productImage.alt = item.name;
+        productImage.classList.add('productimage');
+
+        const quantityBtnIncrement = createButton('+', () => adjustQuantity(item.name, 'increment'));
+        const quantityElement = document.createElement('span');
+        quantityElement.textContent = item.quantity;
+        const quantityBtnDecrement = createButton('-', () => adjustQuantity(item.name, 'decrement'));
+
+        const likeBtn = createButton('❤️', () => toggleLike(item));
+        if (item.liked) likeBtn.classList.add('liked');
+
+        const removeBtn = createButton('Remove', () => removeItem(item.name));
+
+        itemElement.appendChild(productImage);
+        itemElement.appendChild(document.createTextNode(item.name));
+        itemElement.appendChild(quantityBtnIncrement);
+        itemElement.appendChild(quantityElement);
+        itemElement.appendChild(quantityBtnDecrement);
+        itemElement.appendChild(likeBtn);
+        itemElement.appendChild(removeBtn);
+
+        cart.appendChild(itemElement);
+
+        totalPrice += item.quantity * item.price;
+      });
+
+      const totalPriceElement = document.createElement('div');
+      totalPriceElement.textContent = `Total Price: $${totalPrice}`;
+      cart.appendChild(totalPriceElement);
+    }
+
+    function createButton(text, onClick) {
+      const button = document.createElement('button');
+      button.textContent = text;
+      button.addEventListener('click', onClick);
+      return button;
+    }
+
+    function adjustQuantity(itemName, action) {
+      const item = items.find(i => i.name === itemName);
+
+      if (item) {
+        if (action === 'increment') {
+          item.quantity++;
+        } else if (action === 'decrement' && item.quantity > 1) {
+          item.quantity--;
+        }
+
+        renderCart();
+      }
+    }
+
+    function toggleLike(item) {
+        console.log(item.liked)
+      item.liked = !item.liked;
+      renderCart();
+    }
+
+    function removeItem(itemName) {
+      const index = items.findIndex(i => i.name === itemName);
+
+      if (index !== -1) {
+        items.splice(index, 1);
+        renderCart();
+      }
+    }
+
+    renderCart();
+  </script>
+
+</body>
+</html>
